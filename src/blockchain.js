@@ -122,7 +122,9 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             let messageTime = parseInt(message.split(':')[1]);
             let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
-            if((currentTime - messageTime) >= 3000 ){
+            //review: The currentTime and time are in seconds, but you are treating them as if they are in milliseconds. Do not use the 3000 constant and use them in seconds.
+            //if((currentTime - messageTime) >= 3000 ){
+            if((currentTime - messageTime) >= ( 5 * 60) ){ //now in seconds    
                 reject(new Error('More than 5 minutes'))
             } if(bitcoinMessage.verify(message, address, signature) != true) {
                 reject(new Error('The message is not correct'))
