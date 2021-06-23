@@ -65,13 +65,23 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            block.height = self.chain.length;
-            block.time = new Date().getTime().toString().slice(0,-3);
-            if(self.chain.length>0){
-                block.previousBlockHash = self.chain[self.chain.length-1].hash;
+            //review: According to the rubric you should reject if an error happens during the execution. Please implement the rejection code.
+            //Adding try catch
+            try {
+                block.height = self.chain.length;
+                block.time = new Date().getTime().toString().slice(0,-3);
+                if(self.chain.length>0){
+                    block.previousBlockHash = self.chain[self.chain.length-1].hash;
+                }
+                block.hash = SHA256(JSON.stringify(block)).toString();
+                //Review: Just return the block, not the return value of push(). Push() returns the array's length.
+                this.chain.push(block);
+                resolve(block);
             }
-            block.hash = SHA256(JSON.stringify(block)).toString();
-            resolve(this.chain.push(block));
+            catch {
+                reject(new Error('An error happen!'))
+            }
+
         });
     }
 
@@ -179,7 +189,7 @@ class Blockchain {
         });
     }
 
-    /**
+    /*
      * This method will return a Promise that will resolve with the list of errors when validating the chain.
      * Steps to validate:
      * 1. You should validate each block using `validateBlock`
