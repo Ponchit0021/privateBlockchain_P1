@@ -42,13 +42,18 @@ class Block {
             let currentHash = self.hash;        
             // Recalculate the hash of the Block
             currentHash = SHA256(JSON.stringify(self)).toString();
+            
             // Comparing if the hashes changed
             if(self.hash != currentHash){
                 // Returning the Block is not valid
-                reject(new Error('Block not valid'));
+                //review: According to the rubric you need to Resolve true or false depending if it is valid or not. Right now you are rejecting when false and this is incorrect. Please resolve when false.
+                //reject(new Error('Block not valid'));
+                resolve(false)
             } else {
                 // Returning the Block is valid
-                resolve(currentHash);
+                //resolve(currentHash);
+                self.hash = currentHash;
+                resolve(true);
             }
         });
     }
