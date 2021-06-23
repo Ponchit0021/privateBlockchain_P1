@@ -73,6 +73,9 @@ class Blockchain {
                 if(self.chain.length>0){
                     block.previousBlockHash = self.chain[self.chain.length-1].hash;
                 }
+                //review: Update the this.height
+                //Updating this.height
+                this.height = block.height;
                 block.hash = SHA256(JSON.stringify(block)).toString();
                 //Review: Just return the block, not the return value of push(). Push() returns the array's length.
                 this.chain.push(block);
