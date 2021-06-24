@@ -78,6 +78,7 @@ class Blockchain {
                 this.height = block.height;
                 block.hash = SHA256(JSON.stringify(block)).toString();
                 //Review: Just return the block, not the return value of push(). Push() returns the array's length.
+                //await this.validateChain();
                 this.chain.push(block);
                 resolve(block);
             }
@@ -204,20 +205,20 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            for(let i = 0; i <= self.chain.length; i++){
-                if(self.chain.height > 0){
-                    let previousBlock = self.chain[i].previousBlockHash;
-                    if(previousBlock === self.chain[i].hash){
-                        resolve(self.chain);
-                    } else {
-                        reject(new Error(console.errorLog.push('chain is broken')));
+            for (let blockToValid of self.chain) {
+                if (await blockToValid.validate()) {
+                    if (block.height > 0) {
+                        if (self.chain[i].previousBlockHash != self.chain[i-1].hash) {
+                            errorLog.push(new Error(`Invalid link: Block #${block.height} not linked to the hash of block #${block.height - 1}.`));
+                        }
                     }
-                } resolve('Only exists the genesis block')
+                } else {
+                    errorLog.push(new Error(`Invalid block #${block.height}: ${block.hash}`))
+                }
             }
-            
+            errorLog.length > 0 ? resolve(errorLog) : resolve('No errors detected.');
         });
     }
-
 }
 
 module.exports.Blockchain = Blockchain;   

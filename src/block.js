@@ -37,14 +37,14 @@ class Block {
      */
     validate() {
         let self = this;
+        let newHash = null;
         return new Promise((resolve, reject) => {
             // Save in auxiliary variable the current block hash
-            let currentHash = self.hash;        
+            let currentHash = self.hash;
             // Recalculate the hash of the Block
-            currentHash = SHA256(JSON.stringify(self)).toString();
-            
+            newHash = SHA256(JSON.stringify(self)).toString();
             // Comparing if the hashes changed
-            if(self.hash != currentHash){
+            if(newHash != currentHash){
                 // Returning the Block is not valid
                 //review: According to the rubric you need to Resolve true or false depending if it is valid or not. Right now you are rejecting when false and this is incorrect. Please resolve when false.
                 //reject(new Error('Block not valid'));
@@ -52,12 +52,11 @@ class Block {
             } else {
                 // Returning the Block is valid
                 //resolve(currentHash);
-                self.hash = currentHash;
+                self.hash = newHash;
                 resolve(true);
             }
         });
     }
-
     /*
      *  Auxiliary Method to return the block body (decoding the data)
      *  Steps:
@@ -85,5 +84,4 @@ class Block {
         });
     }
 }
-
 module.exports.Block = Block;                    // Exposing the Block class as a module
