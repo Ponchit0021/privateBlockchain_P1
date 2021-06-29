@@ -78,12 +78,12 @@ class Blockchain {
                 this.height = block.height;
                 block.hash = SHA256(JSON.stringify(block)).toString();
                 //Review: Just return the block, not the return value of push(). Push() returns the array's length.
-                //await this.validateChain();
                 this.chain.push(block);
+                await this.chain.validateChain();
                 resolve(block);
             }
             catch {
-                reject(new Error('An error happen!'))
+                reject(new Error('An error happened!'))
             }
 
         });
@@ -129,12 +129,11 @@ class Blockchain {
             //review: The currentTime and time are in seconds, but you are treating them as if they are in milliseconds. Do not use the 3000 constant and use them in seconds.
             //if((currentTime - messageTime) >= 3000 ){
             if((currentTime - messageTime) >= ( 5 * 60) ){ //now in seconds    
-                reject(new Error('More than 5 minutes'))
+                return (reject(new Error('More than 5 minutes')));
             } if(bitcoinMessage.verify(message, address, signature) != true) {
-                reject(new Error('The message is not correct'))
+                return (reject(new Error('The message is not correct')));
             } else {
-                let newBlock = new BlockClass.Block({ star });
-                newBlock.owner = address;
+                let newBlock = new BlockClass.Block({star:star, owner:address});
                 newBlock = await self._addBlock(newBlock);
                 resolve(newBlock);
             }       
@@ -207,13 +206,13 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             for (let blockToValid of self.chain) {
                 if (await blockToValid.validate()) {
-                    if (block.height > 0) {
+                    if (blockToValid.height > 0) {
                         if (self.chain[i].previousBlockHash != self.chain[i-1].hash) {
-                            errorLog.push(new Error(`Invalid link: Block #${block.height} not linked to the hash of block #${block.height - 1}.`));
+                            errorLog.push(new Error(`Invalid link: Block #${blockToValid.height} not linked to the hash of block #${blockToValid.height - 1}.`));
                         }
                     }
                 } else {
-                    errorLog.push(new Error(`Invalid block #${block.height}: ${block.hash}`))
+                    errorLog.push(new Error(`Invalid block #${blockToValid.height}: ${blockToValid.hash}`))
                 }
             }
             errorLog.length > 0 ? resolve(errorLog) : resolve('No errors detected.');
